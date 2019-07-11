@@ -8,6 +8,20 @@ var frequencyData;
 var timeDomainData;
 var gl;
 var shaderProgram;
+var projectionMatrix;
+var viewMatrix;
+var modelMatrix;
+var projectionMatrixLocation;
+var viewMatrixLocation;
+var modelMatrixLocation;
+var positionLocation;
+var cameraPositionLocation;
+var cameraPosition;
+var lightDirectionLocation;
+var lightDirection;
+var amplitudeLocation;
+var frequencyLocation;
+var timeLocation;
 
 $(document).ready(function() {
 	timeDomainCanvas = document.getElementById("timeDomain");
@@ -36,7 +50,23 @@ $(document).ready(function() {
 });
 
 function initScene() {
-	// TO DO
+  // get shader locations
+  projectionMatrixLocation = gl.getUniformLocation(shaderProgram, "projectionMatrix");
+  viewMatrixLocation = gl.getUniformLocation(shaderProgram, "viewMatrix");
+  modelMatrixLocation = gl.getUniformLocation(shaderProgram, "modelMatrix");
+  positionLocation = gl.getAttribLocation(shaderProgram, "position");
+  amplitudeLocation = gl.getUniformLocation(shaderProgram, "amplitude");
+  frequencyLocation = gl.getUniformLocation(shaderProgram, "frequency");
+  timeLocation = gl.getUniformLocation(shaderProgram, "time");
+  cameraPositionLocation = gl.getUniformLocation(shaderProgram, "cameraPosition");
+  lightDirectionLocation = gl.getUniformLocation(shaderProgram, "lightDirection");
+
+  gl.useProgram(shaderProgram);
+
+  // initialize shader variables
+  projectionMatrix = createProjectionMatrix(45, visualizationCanvas.width/visualizationCanvas.height, 0.1, 100);
+  viewMatrix = createIdentityMatrix();
+  modelMatrix = createIdentityMatrix();
 }
 
 function initWebGL(vertexShaderCode, fragmentShaderCode) {
@@ -92,7 +122,32 @@ function draw(time) {
 }
 
 function drawVisualization(time) {
-	// TO DO
+  cameraPosition = [0.5,-0.4,0.5];
+  lightDirection = [Math.sin(time), Math.cos(time), -4];
+
+  viewMatrix = createLookAtMatrix(cameraPosition, [0.5,0.5,0], [0,0,1]);
+
+  gl.enable(gl.DEPTH_TEST);
+  gl.disable(gl.CULL_FACE);
+  gl.depthFunc(gl.LEQUAL);
+  gl.clearColor(0.0, 0.0, 0.0, 0.0);
+  gl.clearDepth(1.0);
+
+  gl.viewport(0.0, 0.0, visualizationCanvas.width, visualizationCanvas.height);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
+  gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
+  gl.uniformMatrix4fv(modelMatrixLocation, false, modelMatrix);
+  gl.uniform3fv(cameraPositionLocation, cameraPosition);
+  gl.uniform3fv(lightDirectionLocation, lightDirection);
+  gl.uniform1f(timeLocation ,time);
+
+  if(frequencyData){
+    gl.uniform1iv(frequencyLocation ,frequencyData);
+  }
+  if(timeDomainData){
+    gl.uniform1iv(amplitudeLocation, timeDomainData);
+  }
 }
 
 function drawArray(time, canvas, array) {

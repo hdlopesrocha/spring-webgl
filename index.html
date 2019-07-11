@@ -8,7 +8,20 @@
 		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
 	<script id="vertexShader" type="x-shader/x-fragment">
+		#define PI 3.1415926535897932384626433832795
+		#define BUFFER_SIZE 512
+
 		#include<libs/noise>
+
+		attribute vec2 position;
+		uniform vec3 cameraPosition;
+		uniform vec3 lightDirection;
+		uniform float time;
+		uniform mat4 projectionMatrix;
+		uniform mat4 viewMatrix;
+		uniform mat4 modelMatrix;
+		uniform int amplitude[BUFFER_SIZE];
+		uniform int frequency[BUFFER_SIZE];
 
 		void main(void) {
 			gl_Position = vec4(1.0, 1.0, 1.0, 1.0);
@@ -17,6 +30,8 @@
 	</script>
 	<script id="fragmentShader" type="x-shader/x-fragment">
 		precision highp float;
+		uniform vec3 cameraPosition;
+		uniform vec3 lightDirection;
 
 		void main(void) {
 			gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
