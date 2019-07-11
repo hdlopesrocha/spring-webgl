@@ -24,9 +24,22 @@
 		uniform int frequency[BUFFER_SIZE];
 
 		varying vec3 vertexPosition;
+		varying vec3 vertexNormal;
+
+		vec3 getPoint(float x, float y) {
+			// setting params
+			float t = time*0.04;
+			float n = myNoiseX(x, y-t, t);
+
+			return vec3(x, y, n*(0.02));
+		}
 
 		void main(void) {
-			vertexPosition = vec3(position.x, position.y, 0.0);
+  		float delta = 0.0001;
+			vec3 v1 = getPoint(position.x+delta, position.y);
+			vec3 v2 = getPoint(position.x, position.y+delta);
+			vertexNormal = cross(vertexPosition -v1, vertexPosition-v2);
+			vertexPosition = getPoint(position.x, position.y);
 			gl_Position = projectionMatrix*viewMatrix*modelMatrix*vec4(vertexPosition, 1.0);
 		}
 
