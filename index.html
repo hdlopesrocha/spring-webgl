@@ -26,12 +26,26 @@
 		varying vec3 vertexPosition;
 		varying vec3 vertexNormal;
 
-		vec3 getPoint(float x, float y) {
-			// setting params
-			float t = time*0.04;
-			float n = myNoiseX(x, y-t, t);
+		#define getFromArray(val, array) float(array[int(clamp(val,0.0,511.0))])
 
-			return vec3(x, y, n*(0.02));
+		vec3 getPoint(float x, float y) {
+			float d = sqrt(pow(0.5-x,2.0)+pow(0.5-y,2.0))*sqrt(2.0);
+			float nx = x*512.0;
+			float nd = d*512.0;
+
+			// real part
+			float rx = nx-floor(nx);
+			float rd = nd-floor(nd);
+
+			// smooth step
+			float sd = (1.0-rd)*getFromArray(nd, frequency)+(rd)*getFromArray(nd+1.0, frequency);
+
+			// setting params
+			float f = 0.1 * sd/255.0;
+			float t = time*0.04;
+
+			float n = myNoiseX(x, y-t, t);
+			return vec3(x, y, n*(0.02+f));
 		}
 
 		void main(void) {
