@@ -6,6 +6,8 @@ var audioSource;
 var analyser;
 var frequencyData; 						
 var timeDomainData;
+var gl;
+var shaderProgram;
 
 $(document).ready(function() {
 	timeDomainCanvas = document.getElementById("timeDomain");
@@ -38,7 +40,25 @@ function initScene() {
 }
 
 function initWebGL(vertexShaderCode, fragmentShaderCode) {
-	// TO DO
+  gl = visualizationCanvas.getContext('webgl');
+
+  // compile vertex shader
+  var vertShader = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertShader, vertexShaderCode);
+  gl.compileShader(vertShader);
+  console.log(gl.getShaderInfoLog(vertShader));
+
+  // compile fragment shader
+  var fragShader = gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fragShader, fragmentShaderCode);
+  gl.compileShader(fragShader);
+  console.log(gl.getShaderInfoLog(fragShader));
+
+  // link shaders
+  shaderProgram = gl.createProgram();
+  gl.attachShader(shaderProgram, vertShader);
+  gl.attachShader(shaderProgram, fragShader);
+  gl.linkProgram(shaderProgram);
 }
 
 function playSound(data) {
