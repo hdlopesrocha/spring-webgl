@@ -7,7 +7,21 @@
     	<script src="code.js"></script>
 		<link rel="stylesheet" type="text/css" href="style.css">
 	</head>
-	
+	<script id="vertexShader" type="x-shader/x-fragment">
+		#include<libs/noise>
+
+		void main(void) {
+			gl_Position = vec4(1.0, 1.0, 1.0, 1.0);
+		}
+
+	</script>
+	<script id="fragmentShader" type="x-shader/x-fragment">
+		precision highp float;
+
+		void main(void) {
+			gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+		}
+	</script>
 	<body>
 		<canvas id="visualization" width="900" height="600" ></canvas><br>
 		<canvas id="timeDomain" width="450" height="100" ></canvas>

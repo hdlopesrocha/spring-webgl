@@ -22,6 +22,15 @@ $(document).ready(function() {
 			};
 		}
 	});
+
+  var vertCode = $("#vertexShader").html();
+  var fragCode = $("#fragmentShader").html();
+
+  download( "libs/simplex.glsl", function( simplex ) {
+    initWebGL(vertCode.replace('#include<libs/noise>',simplex), fragCode);
+    initScene();
+    loop(0);
+  });
 });
 
 function initScene() {
