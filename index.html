@@ -55,6 +55,7 @@
 		vec3 lightColor = vec3(1.0, 1.0, 1.0);
 		vec3 diffuseColor = vec3(0.0, 0.0, 0.0);
 		vec4 waterColor = vec4(0.0, 103.0/255.0, 165.0/255.0, 0.8);
+		vec4 specularColor = vec4(0.0);
 
 		void main(void) {
 			vec3 direction = normalize(lightDirection);
@@ -64,8 +65,17 @@
 
 			if(diffuseFactor > 0.0) {
 				diffuseColor = lightColor * diffuseFactor;
+
+				vec3 reflection = reflect(direction, normal);
+				vec3 eyeToVertex = -normalize(vertexPosition-cameraPosition);
+				float specularFactor = dot(reflection, eyeToVertex);
+				float specularPower = 8.0;
+				if(specularFactor > 0.0 ) {
+					specularFactor = pow(specularFactor, specularPower);
+					specularColor = vec4(lightColor * specularFactor, specularFactor);
+				}
 			}
-			gl_FragColor = waterColor*vec4(diffuseColor, 1.0);
+			gl_FragColor = waterColor*vec4(diffuseColor, 1.0)+specularColor;
 		}
 	</script>
 	<body>
