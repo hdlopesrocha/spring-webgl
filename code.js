@@ -72,7 +72,7 @@ function initScene() {
   // init vertices and indices
   var vertices = [];
   var indices = [];
-  var length = 32;
+  var length = 256;
 
   for(var i=0; i < length; ++i) {
     for(var j=0; j < length; ++j) {
@@ -188,7 +188,7 @@ function drawVisualization(time) {
   if(timeDomainData){
     gl.uniform1iv(amplitudeLocation, timeDomainData);
   }
-  gl.drawElements(gl.LINES, indicesLength, gl.UNSIGNED_SHORT, 0);
+  gl.drawElements(gl.TRIANGLES, indicesLength, gl.UNSIGNED_SHORT, 0);
 }
 
 function drawArray(time, canvas, array) {
