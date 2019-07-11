@@ -22,6 +22,7 @@ var lightDirection;
 var amplitudeLocation;
 var frequencyLocation;
 var timeLocation;
+var indicesLength;
 
 $(document).ready(function() {
 	timeDomainCanvas = document.getElementById("timeDomain");
@@ -67,6 +68,45 @@ function initScene() {
   projectionMatrix = createProjectionMatrix(45, visualizationCanvas.width/visualizationCanvas.height, 0.1, 100);
   viewMatrix = createIdentityMatrix();
   modelMatrix = createIdentityMatrix();
+
+  // init vertices and indices
+  var vertices = [];
+  var indices = [];
+  var length = 32;
+
+  for(var i=0; i < length; ++i) {
+    for(var j=0; j < length; ++j) {
+      // x, y, z
+      vertices.push(i/length);
+      vertices.push(j/length);
+    }
+  }
+
+  for(var i=0; i < length - 1; ++i) {
+    for(var j=0; j < length - 1; ++j) {
+      // first triangle
+      indices.push((j+0) + (i+0)*length);
+      indices.push((j+0) + (i+1)*length);
+      indices.push((j+1) + (i+0)*length);
+      // second triangle
+      indices.push((j+1) + (i+1)*length);
+      indices.push((j+1) + (i+0)*length);
+      indices.push((j+0) + (i+1)*length);
+    }
+  }
+
+  // create vertex buffer
+  var vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0) ;
+  gl.enableVertexAttribArray(positionLocation);
+
+  // create index buffer
+  var indexBuffer = gl.createBuffer ();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+  indicesLength = indices.length;
 }
 
 function initWebGL(vertexShaderCode, fragmentShaderCode) {
@@ -148,6 +188,7 @@ function drawVisualization(time) {
   if(timeDomainData){
     gl.uniform1iv(amplitudeLocation, timeDomainData);
   }
+  gl.drawElements(gl.LINES, indicesLength, gl.UNSIGNED_SHORT, 0);
 }
 
 function drawArray(time, canvas, array) {

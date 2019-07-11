@@ -23,8 +23,11 @@
 		uniform int amplitude[BUFFER_SIZE];
 		uniform int frequency[BUFFER_SIZE];
 
+		varying vec3 vertexPosition;
+
 		void main(void) {
-			gl_Position = vec4(1.0, 1.0, 1.0, 1.0);
+			vertexPosition = vec3(position.x, position.y, 0.0);
+			gl_Position = projectionMatrix*viewMatrix*modelMatrix*vec4(vertexPosition, 1.0);
 		}
 
 	</script>
